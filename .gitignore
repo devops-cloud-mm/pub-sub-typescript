@@ -1,0 +1,9 @@
+node_modules/
+dist/
+service_key/
+
+# Logs
+.DS_Store
+
+.env
+
