@@ -93,5 +93,5 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is Fire at https://localhost:8080`);
+  console.log(`Server is Fire at https://localhost:${port}`);
 });
