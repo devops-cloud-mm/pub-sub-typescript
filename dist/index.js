@@ -22,7 +22,7 @@ const port = process.env.PORT_ || 3000;
 // Instantiates Publisher
 const pubSubClient = new pubsub_1.PubSub();
 // Publishes a message to a topic
-function publishMessage(msj) {
+function publishMessage(msj, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const topicName = 'email-task'; // Replace with your Pub/Sub topic
         const data = JSON.stringify({ message: msj });
@@ -31,6 +31,9 @@ function publishMessage(msj) {
         try {
             const messageId = yield pubSubClient.topic(topicName).publishMessage({ data: dataBuffer });
             console.log(`Message ${messageId} published.`);
+            const show = console.log('your result');
+            res.status(200).send(`Message ${messageId} published. <script>${show}</script>`);
+            // res.status(200).send(`<script>${show}</script>`);
         }
         catch (error) {
             if (error instanceof Error) {
@@ -43,7 +46,7 @@ function publishMessage(msj) {
 // Instantiates a subscription
 const pubSubClient2 = new pubsub_1.PubSub();
 // Function to listen for messages
-function listenForMessages(res) {
+function listenForMessages() {
     return __awaiter(this, void 0, void 0, function* () {
         const subscriptionName = 'email-task-sub'; // Replace with your Pub/Sub subscription
         // const timeout = 120; // Set the timeout for how long to listen for messages
@@ -54,8 +57,8 @@ function listenForMessages(res) {
             console.log(`Received message ${message.id}:`);
             console.log(`Data: ${message.data.toString()}`);
             console.log(`Attributes: ${JSON.stringify(message.attributes)}`);
-            res.type("application/json");
-            res.status(200).json({ id: message.id, data: message.data.toString(), attributes: JSON.stringify(message.attributes) });
+            //res.send(Buffer.from(`Received message ${message.id} Data: ${message.data.toString()}`));
+            //res.status(200).json({ id: message.id, data: message.data.toString(), attributes:JSON.stringify(message.attributes)});
             // Acknowledge the message
             message.ack();
         };
@@ -68,15 +71,36 @@ function listenForMessages(res) {
         }, timeout * 1000);*/
     });
 }
+//app.use( express.json() ); // raw
+app.use('/', express_1.default.static('public'));
 app.get('/', (req, res) => {
+    //res.set('Content-Type', 'json');
+    listenForMessages();
+});
+app.get('/server-sent-events', function (req, res) {
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    });
+    let dateTime = new Date();
+    const timeout = 120; // Set the timeout for how long to listen for messages
+    let interval = setTimeout(() => {
+        console.log(`data: ${dateTime} \n\n`);
+    }, timeout * 1000);
+    // close
+    res.on('close', () => {
+        clearInterval(interval);
+        res.end();
+    });
+});
+app.get('/send', (req, res) => {
     const msj = req.query.msj;
     if (!msj) {
-        res.type("application/json");
-        res.status(500).json({ error: "messaje is empty" });
+        res.status(500).send("messaje is empty");
         return;
     }
-    publishMessage(msj);
-    listenForMessages(res);
+    publishMessage(msj, res);
 });
 app.listen(port, () => {
     console.log(`Server is Fire at https://localhost:${port}`);
