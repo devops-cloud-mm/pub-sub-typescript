@@ -5,8 +5,8 @@
   "scripts": {
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/index.js",
-    "dev": "nodemon src/index.ts"
-  },
+    "dev": "node src/index.ts"
+  }, 
   "keywords": [],
   "author": "",
   "license": "ISC",
