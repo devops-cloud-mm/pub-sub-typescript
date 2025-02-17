@@ -7,7 +7,7 @@ import {PubSub} from '@google-cloud/pubsub';
 dotenv.config();
 
 const app: Application = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT_ || 3000;
 
 
 // Instantiates Publisher
