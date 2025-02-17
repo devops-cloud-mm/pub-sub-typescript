@@ -2,6 +2,6 @@
 
 
 ## Send a messaje
-https://url-cloud-run:3000/?msj=mytest
+https://url-cloud-run/?msj=mytest
 
 
